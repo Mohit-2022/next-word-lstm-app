@@ -26,19 +26,22 @@ def predict_top3_words(text):
     seq = tk.texts_to_sequences([text])[0]
     seq = pad_sequences([seq], maxlen=max_len, padding='pre')
 
-    pred = model.predict(seq, verbose=0)
+    pred = model.predict(seq, verbose=0)[0]
 
-    top_indices = np.argsort(pred[0])[-3:]
-    top_indices = top_indices[::-1]
+    top_indices = np.argsort(pred)[-10:][::-1]
 
-    predicted_words = []
+    stop_words = {"the", "a", "an", "is", "was", "of", "in", "to"}
+
+    filtered_words = []
 
     for index in top_indices:
         word = tk.index_word.get(index, "")
-        predicted_words.append(word)
+        if word not in stop_words:
+            filtered_words.append(word)
+        if len(filtered_words) == 3:
+            break
 
-    return predicted_words
-
+    return filtered_words
 # =============================
 # Streamlit UI
 # =============================
